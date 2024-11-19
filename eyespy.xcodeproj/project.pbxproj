@@ -1,0 +1,697 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		24F7A9EA81C40FBB46A7A705 /* Pods_eyespyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44DFB62A13C5D127286B9EA6 /* Pods_eyespyTests.framework */; };
+		A7FC9BF9CE03DCF70D8140E6 /* Pods_eyespy_eyespyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21769B6A8C0039C2C98D7EB4 /* Pods_eyespy_eyespyUITests.framework */; };
+		CBAB66DA2CEC7BE600F44EC6 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CBAB66D92CEC7BE100F44EC6 /* .gitignore */; };
+		F1BC3E4B8817BBFFBD963BFC /* Pods_eyespy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA58359737853851D310E404 /* Pods_eyespy.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CB34C84A2CEC5AB5006FCE3E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CB34C8312CEC5AB4006FCE3E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CB34C8382CEC5AB4006FCE3E;
+			remoteInfo = eyespy;
+		};
+		CB34C8542CEC5AB5006FCE3E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CB34C8312CEC5AB4006FCE3E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CB34C8382CEC5AB4006FCE3E;
+			remoteInfo = eyespy;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		213454264F72FECD2C28B22E /* Pods-eyespy-eyespyUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespy-eyespyUITests.debug.xcconfig"; path = "Target Support Files/Pods-eyespy-eyespyUITests/Pods-eyespy-eyespyUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		21769B6A8C0039C2C98D7EB4 /* Pods_eyespy_eyespyUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eyespy_eyespyUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		44DFB62A13C5D127286B9EA6 /* Pods_eyespyTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eyespyTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		799F6E1B2F1A33EC96A2150A /* Pods-eyespy-eyespyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespy-eyespyUITests.release.xcconfig"; path = "Target Support Files/Pods-eyespy-eyespyUITests/Pods-eyespy-eyespyUITests.release.xcconfig"; sourceTree = "<group>"; };
+		B1996A6B4AEDB78BF26BA7F5 /* Pods-eyespyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespyTests.release.xcconfig"; path = "Target Support Files/Pods-eyespyTests/Pods-eyespyTests.release.xcconfig"; sourceTree = "<group>"; };
+		BE109E8FFFB9E2EF09982942 /* Pods-eyespy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespy.debug.xcconfig"; path = "Target Support Files/Pods-eyespy/Pods-eyespy.debug.xcconfig"; sourceTree = "<group>"; };
+		CA58359737853851D310E404 /* Pods_eyespy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eyespy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB34C8392CEC5AB4006FCE3E /* eyespy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = eyespy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB34C8492CEC5AB5006FCE3E /* eyespyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = eyespyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB34C8532CEC5AB5006FCE3E /* eyespyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = eyespyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBAB66D92CEC7BE100F44EC6 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		D90E74168116112E48F71D37 /* Pods-eyespy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespy.release.xcconfig"; path = "Target Support Files/Pods-eyespy/Pods-eyespy.release.xcconfig"; sourceTree = "<group>"; };
+		DD027C066D6EDB5F9FA72C13 /* Pods-eyespyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespyTests.debug.xcconfig"; path = "Target Support Files/Pods-eyespyTests/Pods-eyespyTests.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CB0597F72CEC7435009976D9 /* Exceptions for "eyespy" folder in "eyespy" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CB34C8382CEC5AB4006FCE3E /* eyespy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		CB34C83B2CEC5AB4006FCE3E /* eyespy */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CB0597F72CEC7435009976D9 /* Exceptions for "eyespy" folder in "eyespy" target */,
+			);
+			path = eyespy;
+			sourceTree = "<group>";
+		};
+		CB34C84C2CEC5AB5006FCE3E /* eyespyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = eyespyTests;
+			sourceTree = "<group>";
+		};
+		CB34C8562CEC5AB5006FCE3E /* eyespyUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = eyespyUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CB34C8362CEC5AB4006FCE3E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F1BC3E4B8817BBFFBD963BFC /* Pods_eyespy.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB34C8462CEC5AB5006FCE3E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				24F7A9EA81C40FBB46A7A705 /* Pods_eyespyTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB34C8502CEC5AB5006FCE3E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7FC9BF9CE03DCF70D8140E6 /* Pods_eyespy_eyespyUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A88AFC4F4A53D985D2A7FD69 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BE109E8FFFB9E2EF09982942 /* Pods-eyespy.debug.xcconfig */,
+				D90E74168116112E48F71D37 /* Pods-eyespy.release.xcconfig */,
+				213454264F72FECD2C28B22E /* Pods-eyespy-eyespyUITests.debug.xcconfig */,
+				799F6E1B2F1A33EC96A2150A /* Pods-eyespy-eyespyUITests.release.xcconfig */,
+				DD027C066D6EDB5F9FA72C13 /* Pods-eyespyTests.debug.xcconfig */,
+				B1996A6B4AEDB78BF26BA7F5 /* Pods-eyespyTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		B699A2C9A8A99C57A6C54D7D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CA58359737853851D310E404 /* Pods_eyespy.framework */,
+				21769B6A8C0039C2C98D7EB4 /* Pods_eyespy_eyespyUITests.framework */,
+				44DFB62A13C5D127286B9EA6 /* Pods_eyespyTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CB34C8302CEC5AB4006FCE3E = {
+			isa = PBXGroup;
+			children = (
+				CBAB66D92CEC7BE100F44EC6 /* .gitignore */,
+				CB34C83B2CEC5AB4006FCE3E /* eyespy */,
+				CB34C84C2CEC5AB5006FCE3E /* eyespyTests */,
+				CB34C8562CEC5AB5006FCE3E /* eyespyUITests */,
+				CB34C83A2CEC5AB4006FCE3E /* Products */,
+				A88AFC4F4A53D985D2A7FD69 /* Pods */,
+				B699A2C9A8A99C57A6C54D7D /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		CB34C83A2CEC5AB4006FCE3E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CB34C8392CEC5AB4006FCE3E /* eyespy.app */,
+				CB34C8492CEC5AB5006FCE3E /* eyespyTests.xctest */,
+				CB34C8532CEC5AB5006FCE3E /* eyespyUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CB34C8382CEC5AB4006FCE3E /* eyespy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CB34C85D2CEC5AB5006FCE3E /* Build configuration list for PBXNativeTarget "eyespy" */;
+			buildPhases = (
+				2EC1A22E7DF7030299383BC0 /* [CP] Check Pods Manifest.lock */,
+				CB34C8352CEC5AB4006FCE3E /* Sources */,
+				CB34C8362CEC5AB4006FCE3E /* Frameworks */,
+				CB34C8372CEC5AB4006FCE3E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CB34C83B2CEC5AB4006FCE3E /* eyespy */,
+			);
+			name = eyespy;
+			productName = eyespy;
+			productReference = CB34C8392CEC5AB4006FCE3E /* eyespy.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CB34C8482CEC5AB5006FCE3E /* eyespyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CB34C8602CEC5AB5006FCE3E /* Build configuration list for PBXNativeTarget "eyespyTests" */;
+			buildPhases = (
+				8203DB7F671B65494B21D843 /* [CP] Check Pods Manifest.lock */,
+				CB34C8452CEC5AB5006FCE3E /* Sources */,
+				CB34C8462CEC5AB5006FCE3E /* Frameworks */,
+				CB34C8472CEC5AB5006FCE3E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CB34C84B2CEC5AB5006FCE3E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CB34C84C2CEC5AB5006FCE3E /* eyespyTests */,
+			);
+			name = eyespyTests;
+			productName = eyespyTests;
+			productReference = CB34C8492CEC5AB5006FCE3E /* eyespyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		CB34C8522CEC5AB5006FCE3E /* eyespyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CB34C8632CEC5AB5006FCE3E /* Build configuration list for PBXNativeTarget "eyespyUITests" */;
+			buildPhases = (
+				2F633722409CE3D2C6B30D40 /* [CP] Check Pods Manifest.lock */,
+				CB34C84F2CEC5AB5006FCE3E /* Sources */,
+				CB34C8502CEC5AB5006FCE3E /* Frameworks */,
+				CB34C8512CEC5AB5006FCE3E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CB34C8552CEC5AB5006FCE3E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CB34C8562CEC5AB5006FCE3E /* eyespyUITests */,
+			);
+			name = eyespyUITests;
+			productName = eyespyUITests;
+			productReference = CB34C8532CEC5AB5006FCE3E /* eyespyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CB34C8312CEC5AB4006FCE3E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1610;
+				TargetAttributes = {
+					CB34C8382CEC5AB4006FCE3E = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					CB34C8482CEC5AB5006FCE3E = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = CB34C8382CEC5AB4006FCE3E;
+					};
+					CB34C8522CEC5AB5006FCE3E = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = CB34C8382CEC5AB4006FCE3E;
+					};
+				};
+			};
+			buildConfigurationList = CB34C8342CEC5AB4006FCE3E /* Build configuration list for PBXProject "eyespy" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CB34C8302CEC5AB4006FCE3E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = CB34C83A2CEC5AB4006FCE3E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CB34C8382CEC5AB4006FCE3E /* eyespy */,
+				CB34C8482CEC5AB5006FCE3E /* eyespyTests */,
+				CB34C8522CEC5AB5006FCE3E /* eyespyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CB34C8372CEC5AB4006FCE3E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CBAB66DA2CEC7BE600F44EC6 /* .gitignore in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB34C8472CEC5AB5006FCE3E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB34C8512CEC5AB5006FCE3E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2EC1A22E7DF7030299383BC0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-eyespy-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2F633722409CE3D2C6B30D40 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-eyespy-eyespyUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8203DB7F671B65494B21D843 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-eyespyTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CB34C8352CEC5AB4006FCE3E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB34C8452CEC5AB5006FCE3E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB34C84F2CEC5AB5006FCE3E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CB34C84B2CEC5AB5006FCE3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CB34C8382CEC5AB4006FCE3E /* eyespy */;
+			targetProxy = CB34C84A2CEC5AB5006FCE3E /* PBXContainerItemProxy */;
+		};
+		CB34C8552CEC5AB5006FCE3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CB34C8382CEC5AB4006FCE3E /* eyespy */;
+			targetProxy = CB34C8542CEC5AB5006FCE3E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		CB34C85B2CEC5AB5006FCE3E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CB34C85C2CEC5AB5006FCE3E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CB34C85E2CEC5AB5006FCE3E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BE109E8FFFB9E2EF09982942 /* Pods-eyespy.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"eyespy/Preview Content\"";
+				DEVELOPMENT_TEAM = N67YVTF7N3;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = eyespy/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexhuynh.eyespy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CB34C85F2CEC5AB5006FCE3E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D90E74168116112E48F71D37 /* Pods-eyespy.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"eyespy/Preview Content\"";
+				DEVELOPMENT_TEAM = N67YVTF7N3;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = eyespy/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexhuynh.eyespy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CB34C8612CEC5AB5006FCE3E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DD027C066D6EDB5F9FA72C13 /* Pods-eyespyTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N67YVTF7N3;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexhuynh.eyespyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/eyespy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/eyespy";
+			};
+			name = Debug;
+		};
+		CB34C8622CEC5AB5006FCE3E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B1996A6B4AEDB78BF26BA7F5 /* Pods-eyespyTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N67YVTF7N3;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexhuynh.eyespyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/eyespy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/eyespy";
+			};
+			name = Release;
+		};
+		CB34C8642CEC5AB5006FCE3E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 213454264F72FECD2C28B22E /* Pods-eyespy-eyespyUITests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N67YVTF7N3;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexhuynh.eyespyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = eyespy;
+			};
+			name = Debug;
+		};
+		CB34C8652CEC5AB5006FCE3E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 799F6E1B2F1A33EC96A2150A /* Pods-eyespy-eyespyUITests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N67YVTF7N3;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexhuynh.eyespyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = eyespy;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CB34C8342CEC5AB4006FCE3E /* Build configuration list for PBXProject "eyespy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB34C85B2CEC5AB5006FCE3E /* Debug */,
+				CB34C85C2CEC5AB5006FCE3E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CB34C85D2CEC5AB5006FCE3E /* Build configuration list for PBXNativeTarget "eyespy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB34C85E2CEC5AB5006FCE3E /* Debug */,
+				CB34C85F2CEC5AB5006FCE3E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CB34C8602CEC5AB5006FCE3E /* Build configuration list for PBXNativeTarget "eyespyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB34C8612CEC5AB5006FCE3E /* Debug */,
+				CB34C8622CEC5AB5006FCE3E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CB34C8632CEC5AB5006FCE3E /* Build configuration list for PBXNativeTarget "eyespyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB34C8642CEC5AB5006FCE3E /* Debug */,
+				CB34C8652CEC5AB5006FCE3E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CB34C8312CEC5AB4006FCE3E /* Project object */;
+}
