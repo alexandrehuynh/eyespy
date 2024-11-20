@@ -56,7 +56,7 @@ class MediaPipeService: ObservableObject {
                     x: CGFloat(landmark.x),
                     y: CGFloat(landmark.y)
                 ),
-                visibility: CGFloat(landmark.visibility ?? 0.0)
+                visibility: CGFloat(truncating: landmark.visibility ?? 0.0)
             )
         }
     }
