@@ -9,13 +9,24 @@ import AVFoundation
 import UIKit
 import Combine
 
+// NEW: Added error enum for better error handling
+enum CameraError: Error {
+    case deviceNotFound
+    case inputError
+    case permissionDenied
+    case setupFailed
+}
+
 class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, ObservableObject {
     public let captureSession = AVCaptureSession()
     private var videoDataOutput: AVCaptureVideoDataOutput?
     
-    // Add published properties that the UI might need to observe
+    // Original published properties
     @Published var isRunning: Bool = false
     @Published var currentFrame: CMSampleBuffer?
+    
+    // Added published property for error handling
+    @Published var error: CameraError?
     
     @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         DispatchQueue.main.async {
@@ -25,46 +36,120 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, Obs
     
     override init() {
         super.init()
-        setupCaptureSession()
+        // Check permissions before setup
+        checkCameraPermissions { [weak self] granted in
+            if granted {
+                self?.setupCaptureSession()
+            } else {
+                self?.error = .permissionDenied
+            }
+        }
     }
     
-    private func setupCaptureSession() {
-        guard let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
-              let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice) else {
+    // Added permission handling
+    private func checkCameraPermissions(completion: @escaping (Bool) -> Void) {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            completion(true)
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async {
+                    completion(granted)
+                }
+            }
+        case .denied, .restricted:
+            completion(false)
+        @unknown default:
+            completion(false)
+        }
+    }
+    
+    // Modified setupCaptureSession with error handling and completion
+    private func setupCaptureSession(completion: ((Result<Void, CameraError>) -> Void)? = nil) {
+        // NEW: Added session preset
+        captureSession.sessionPreset = .high
+        
+        guard let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
+            error = .deviceNotFound
+            completion?(.failure(.deviceNotFound))
             return
         }
         
-        if captureSession.canAddInput(videoDeviceInput) {
-            captureSession.addInput(videoDeviceInput)
+        do {
+            let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
+            
+            if captureSession.canAddInput(videoDeviceInput) {
+                captureSession.addInput(videoDeviceInput)
+            } else {
+                error = .inputError
+                completion?(.failure(.inputError))
+                return
+            }
+            
+            let videoDataOutput = AVCaptureVideoDataOutput()
+            
+            // Added video settings
+            videoDataOutput.videoSettings = [
+                (kCVPixelBufferPixelFormatTypeKey as String): Int(kCVPixelFormatType_32BGRA)
+            ]
+            
+            videoDataOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
+            
+            if captureSession.canAddOutput(videoDataOutput) {
+                captureSession.addOutput(videoDataOutput)
+                self.videoDataOutput = videoDataOutput
+                completion?(.success(()))
+            } else {
+                error = .setupFailed
+                completion?(.failure(.setupFailed))
+            }
+            
+        } catch {
+            self.error = .setupFailed
+            completion?(.failure(.setupFailed))
         }
-        
-        let videoDataOutput = AVCaptureVideoDataOutput()
-        videoDataOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
-        
-        if captureSession.canAddOutput(videoDataOutput) {
-            captureSession.addOutput(videoDataOutput)
-        }
-        
-        self.videoDataOutput = videoDataOutput
     }
     
-    func startSession() {
-            // Run on background thread to avoid UI hang
-            DispatchQueue.global(qos: .background).async { [weak self] in
-                self?.captureSession.startRunning()
-                DispatchQueue.main.async {
-                    self?.isRunning = true
-                }
+    // Enhanced session control methods with completion handlers
+    func startSession(completion: ((Bool) -> Void)? = nil) {
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let self = self else { return }
+            self.captureSession.startRunning()
+            DispatchQueue.main.async {
+                self.isRunning = true
+                completion?(true)
             }
         }
+    }
     
-    func stopSession() {
-        // Run on background thread
+    func stopSession(completion: ((Bool) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async { [weak self] in
-            self?.captureSession.stopRunning()
+            guard let self = self else { return }
+            self.captureSession.stopRunning()
             DispatchQueue.main.async {
-                self?.isRunning = false
+                self.isRunning = false
+                completion?(true)
             }
+        }
+    }
+    
+    // Added method to reset session
+    func resetSession(completion: ((Result<Void, CameraError>) -> Void)? = nil) {
+        stopSession { [weak self] _ in
+            self?.captureSession.beginConfiguration()
+            
+            // Remove all inputs and outputs
+            for input in self?.captureSession.inputs ?? [] {
+                self?.captureSession.removeInput(input)
+            }
+            for output in self?.captureSession.outputs ?? [] {
+                self?.captureSession.removeOutput(output)
+            }
+            
+            self?.captureSession.commitConfiguration()
+            
+            // Reconfigure the session
+            self?.setupCaptureSession(completion: completion)
         }
     }
 }
