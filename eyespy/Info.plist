@@ -4,5 +4,7 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to detect poses</string>
+	<key>MTLGPUFamily</key>
+	<string>MTLGPUFamilyApple7</string>
 </dict>
 </plist>

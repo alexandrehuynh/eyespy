@@ -8,8 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		24F7A9EA81C40FBB46A7A705 /* Pods_eyespyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44DFB62A13C5D127286B9EA6 /* Pods_eyespyTests.framework */; };
-		A7FC9BF9CE03DCF70D8140E6 /* Pods_eyespy_eyespyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21769B6A8C0039C2C98D7EB4 /* Pods_eyespy_eyespyUITests.framework */; };
+		7F83121DD78346048195598D /* Pods_eyespyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 880FE738D28D9CF0EF711CA4 /* Pods_eyespyUITests.framework */; };
 		CBAB66DA2CEC7BE600F44EC6 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CBAB66D92CEC7BE100F44EC6 /* .gitignore */; };
+		CBDB7D482CEED3E4000AB47B /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBDB7D452CEED3E4000AB47B /* Metal.framework */; };
+		CBDB7D492CEED3E4000AB47B /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBDB7D462CEED3E4000AB47B /* MetalKit.framework */; };
+		CBDB7D4A2CEED3E4000AB47B /* MetalFX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBDB7D472CEED3E4000AB47B /* MetalFX.framework */; };
 		F1BC3E4B8817BBFFBD963BFC /* Pods_eyespy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA58359737853851D310E404 /* Pods_eyespy.framework */; };
 /* End PBXBuildFile section */
 
@@ -32,9 +35,10 @@
 
 /* Begin PBXFileReference section */
 		213454264F72FECD2C28B22E /* Pods-eyespy-eyespyUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespy-eyespyUITests.debug.xcconfig"; path = "Target Support Files/Pods-eyespy-eyespyUITests/Pods-eyespy-eyespyUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		21769B6A8C0039C2C98D7EB4 /* Pods_eyespy_eyespyUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eyespy_eyespyUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		44DFB62A13C5D127286B9EA6 /* Pods_eyespyTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eyespyTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4634B99186F664B49EB91F35 /* Pods-eyespyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespyUITests.release.xcconfig"; path = "Target Support Files/Pods-eyespyUITests/Pods-eyespyUITests.release.xcconfig"; sourceTree = "<group>"; };
 		799F6E1B2F1A33EC96A2150A /* Pods-eyespy-eyespyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespy-eyespyUITests.release.xcconfig"; path = "Target Support Files/Pods-eyespy-eyespyUITests/Pods-eyespy-eyespyUITests.release.xcconfig"; sourceTree = "<group>"; };
+		880FE738D28D9CF0EF711CA4 /* Pods_eyespyUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eyespyUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1996A6B4AEDB78BF26BA7F5 /* Pods-eyespyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespyTests.release.xcconfig"; path = "Target Support Files/Pods-eyespyTests/Pods-eyespyTests.release.xcconfig"; sourceTree = "<group>"; };
 		BE109E8FFFB9E2EF09982942 /* Pods-eyespy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespy.debug.xcconfig"; path = "Target Support Files/Pods-eyespy/Pods-eyespy.debug.xcconfig"; sourceTree = "<group>"; };
 		CA58359737853851D310E404 /* Pods_eyespy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eyespy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -42,6 +46,10 @@
 		CB34C8492CEC5AB5006FCE3E /* eyespyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = eyespyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB34C8532CEC5AB5006FCE3E /* eyespyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = eyespyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBAB66D92CEC7BE100F44EC6 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		CBDB7D452CEED3E4000AB47B /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		CBDB7D462CEED3E4000AB47B /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		CBDB7D472CEED3E4000AB47B /* MetalFX.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalFX.framework; path = System/Library/Frameworks/MetalFX.framework; sourceTree = SDKROOT; };
+		D8C87944FC74152D7DD7F824 /* Pods-eyespyUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespyUITests.debug.xcconfig"; path = "Target Support Files/Pods-eyespyUITests/Pods-eyespyUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D90E74168116112E48F71D37 /* Pods-eyespy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespy.release.xcconfig"; path = "Target Support Files/Pods-eyespy/Pods-eyespy.release.xcconfig"; sourceTree = "<group>"; };
 		DD027C066D6EDB5F9FA72C13 /* Pods-eyespyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eyespyTests.debug.xcconfig"; path = "Target Support Files/Pods-eyespyTests/Pods-eyespyTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,11 +75,15 @@
 		};
 		CB34C84C2CEC5AB5006FCE3E /* eyespyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = eyespyTests;
 			sourceTree = "<group>";
 		};
 		CB34C8562CEC5AB5006FCE3E /* eyespyUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = eyespyUITests;
 			sourceTree = "<group>";
 		};
@@ -82,6 +94,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CBDB7D492CEED3E4000AB47B /* MetalKit.framework in Frameworks */,
+				CBDB7D482CEED3E4000AB47B /* Metal.framework in Frameworks */,
+				CBDB7D4A2CEED3E4000AB47B /* MetalFX.framework in Frameworks */,
 				F1BC3E4B8817BBFFBD963BFC /* Pods_eyespy.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -98,7 +113,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A7FC9BF9CE03DCF70D8140E6 /* Pods_eyespy_eyespyUITests.framework in Frameworks */,
+				7F83121DD78346048195598D /* Pods_eyespyUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +129,8 @@
 				799F6E1B2F1A33EC96A2150A /* Pods-eyespy-eyespyUITests.release.xcconfig */,
 				DD027C066D6EDB5F9FA72C13 /* Pods-eyespyTests.debug.xcconfig */,
 				B1996A6B4AEDB78BF26BA7F5 /* Pods-eyespyTests.release.xcconfig */,
+				D8C87944FC74152D7DD7F824 /* Pods-eyespyUITests.debug.xcconfig */,
+				4634B99186F664B49EB91F35 /* Pods-eyespyUITests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -121,9 +138,12 @@
 		B699A2C9A8A99C57A6C54D7D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CBDB7D452CEED3E4000AB47B /* Metal.framework */,
+				CBDB7D472CEED3E4000AB47B /* MetalFX.framework */,
+				CBDB7D462CEED3E4000AB47B /* MetalKit.framework */,
 				CA58359737853851D310E404 /* Pods_eyespy.framework */,
-				21769B6A8C0039C2C98D7EB4 /* Pods_eyespy_eyespyUITests.framework */,
 				44DFB62A13C5D127286B9EA6 /* Pods_eyespyTests.framework */,
+				880FE738D28D9CF0EF711CA4 /* Pods_eyespyUITests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -326,7 +346,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-eyespy-eyespyUITests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-eyespyUITests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -618,7 +638,7 @@
 		};
 		CB34C8642CEC5AB5006FCE3E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 213454264F72FECD2C28B22E /* Pods-eyespy-eyespyUITests.debug.xcconfig */;
+			baseConfigurationReference = D8C87944FC74152D7DD7F824 /* Pods-eyespyUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -636,7 +656,7 @@
 		};
 		CB34C8652CEC5AB5006FCE3E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 799F6E1B2F1A33EC96A2150A /* Pods-eyespy-eyespyUITests.release.xcconfig */;
+			baseConfigurationReference = 4634B99186F664B49EB91F35 /* Pods-eyespyUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

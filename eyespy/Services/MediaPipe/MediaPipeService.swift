@@ -6,6 +6,8 @@
 //
 
 import MediaPipeTasksVision
+import Metal
+import MetalKit
 import CoreGraphics
 
 // Rename our custom types to avoid conflicts
