@@ -2,6 +2,7 @@ import MediaPipeTasksVision
 import Metal
 import MetalKit
 import CoreGraphics
+import Combine
 
 // Added error enum
 enum MediaPipeServiceError: Error {
@@ -24,6 +25,7 @@ protocol MediaPipeServiceDelegate: AnyObject {
 }
 
 class MediaPipeService: ObservableObject {
+    private var cancellables = Set<AnyCancellable>()
     private var poseLandmarker: PoseLandmarker?
     @Published var currentPoseResult: PoseDetectionResult?
     

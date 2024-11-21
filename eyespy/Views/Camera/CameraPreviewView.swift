@@ -16,7 +16,7 @@ enum CameraPermissionState {
 }
 
 struct CameraPreviewView: UIViewRepresentable {
-    let cameraManager: CameraManager
+    let session: AVCaptureSession
     
     // Add orientation observer
     @ObservedObject private var orientationObserver = DeviceOrientationObserver()
@@ -29,26 +29,19 @@ struct CameraPreviewView: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> UIView {
-        // Check permission before creating view
-        permissionHandler.checkCameraPermission()
-        
-        let view = UIView(frame: UIScreen.main.bounds)
-        let previewLayer = AVCaptureVideoPreviewLayer(session: cameraManager.captureSession)
-        previewLayer.frame = view.bounds
-        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        
-        // Set initial orientation
-        updatePreviewLayerOrientation(previewLayer)
-        
+        let view = UIView(frame: .zero)
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
         view.layer.addSublayer(previewLayer)
         return view
     }
     
     func updateUIView(_ uiView: UIView, context: Context) {
         if let previewLayer = uiView.layer.sublayers?.first as? AVCaptureVideoPreviewLayer {
-            updatePreviewLayerOrientation(previewLayer)
+            previewLayer.frame = uiView.bounds
         }
     }
+}
     
     private func updatePreviewLayerOrientation(_ previewLayer: AVCaptureVideoPreviewLayer) {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -80,7 +73,6 @@ struct CameraPreviewView: UIViewRepresentable {
             self.parent = parent
         }
     }
-}
 
 // Separate permission handler class
 class CameraPermissionHandler: ObservableObject {

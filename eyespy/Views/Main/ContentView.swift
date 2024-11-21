@@ -9,30 +9,29 @@ import SwiftUI
 import AVFoundation
 
 struct ContentView: View {
-    @StateObject private var cameraManager = CameraManager()
+    @StateObject private var viewModel = MainViewModel()
     
     var body: some View {
         ZStack {
-            CameraPreviewView(cameraManager: cameraManager)
+            CameraPreviewView(session: viewModel.captureSession)
                 .edgesIgnoringSafeArea(.all)
             
-            // Optional: Add an overlay to show when camera is starting
-            if !cameraManager.isRunning {
+            if !viewModel.isRunning {
                 Color.black
                 Text("Starting camera...")
                     .foregroundColor(.white)
             }
             
-            // Optional: Add a pose visualization overlay here later
-            PoseVisualizationView()
-                .edgesIgnoringSafeArea(.all)
+            if let pose = viewModel.currentPose {
+                PoseVisualizationView(pose: pose)
+                    .edgesIgnoringSafeArea(.all)
+            }
         }
         .onAppear {
-            cameraManager.startSession()
+            viewModel.startSession()
         }
         .onDisappear {
-            cameraManager.stopSession()
+            viewModel.stopSession()
         }
     }
 }
-
