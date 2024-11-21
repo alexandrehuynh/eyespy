@@ -25,7 +25,7 @@ protocol MediaPipeServiceDelegate: AnyObject {
 
 class MediaPipeService: ObservableObject {
     private var poseLandmarker: PoseLandmarker?
-    @Published var currentPoseResult: CustomPoseResult?
+    @Published var currentPoseResult: PoseDetectionResult?
     
     // Added status tracking
     @Published var processingStatus: ProcessingStatus = .idle
@@ -92,8 +92,10 @@ class MediaPipeService: ObservableObject {
             
             if let firstPose = result.landmarks.first {
                 let landmarks = convertToLandmarks(firstPose)
-                currentPoseResult = CustomPoseResult(landmarks: landmarks,
-                                                   connections: getConnections(landmarks))
+                currentPoseResult = PoseDetectionResult(
+                    landmarks: landmarks,
+                    connections: getConnections(landmarks)
+                )
                 
                 // Update processing status to idle after successful processing
                 processingStatus = .idle
@@ -121,20 +123,20 @@ class MediaPipeService: ObservableObject {
         lastProcessingTime = 0
     }
     
-    private func convertToLandmarks(_ landmarks: [NormalizedLandmark]) -> [CustomPoseLandmark] {
+    private func convertToLandmarks(_ landmarks: [NormalizedLandmark]) -> [PoseLandmark] {
         return landmarks.enumerated().map { (index, landmark) in
-            CustomPoseLandmark(
-                type: CustomPoseLandmarkType(rawValue: Int(truncating: NSNumber(value: index))) ?? .nose,
+            PoseLandmark(
                 position: CGPoint(
                     x: CGFloat(landmark.x),
                     y: CGFloat(landmark.y)
                 ),
-                visibility: CGFloat(truncating: landmark.visibility ?? 0.0)
+                confidence: Float(truncating: landmark.visibility ?? 0.0),
+                type: LandmarkType(rawValue: index) ?? .nose
             )
         }
     }
     
-    private func getConnections(_ landmarks: [CustomPoseLandmark]) -> [(from: CustomPoseLandmark, to: CustomPoseLandmark)] {
+    private func getConnections(_ landmarks: [PoseLandmark]) -> [(from: PoseLandmark, to: PoseLandmark)] {
         let connections: [(from: Int, to: Int)] = [
             // Torso
             (11, 12), // shoulders
@@ -168,36 +170,4 @@ class MediaPipeService: ObservableObject {
                    to: landmarks[connection.to])
         }
     }
-}
-
-// Supporting types remain unchanged
-struct CustomPoseResult {
-    let landmarks: [CustomPoseLandmark]
-    let connections: [(from: CustomPoseLandmark, to: CustomPoseLandmark)]
-}
-
-struct CustomPoseLandmark {
-    let type: CustomPoseLandmarkType
-    let position: CGPoint
-    let visibility: CGFloat
-}
-
-enum CustomPoseLandmarkType: Int {
-    case nose = 0
-    case leftEye = 1
-    case rightEye = 2
-    case leftEar = 3
-    case rightEar = 4
-    case leftShoulder = 11
-    case rightShoulder = 12
-    case leftElbow = 13
-    case rightElbow = 14
-    case leftWrist = 15
-    case rightWrist = 16
-    case leftHip = 23
-    case rightHip = 24
-    case leftKnee = 25
-    case rightKnee = 26
-    case leftAnkle = 27
-    case rightAnkle = 28
 }
