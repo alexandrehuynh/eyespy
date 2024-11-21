@@ -1,19 +1,42 @@
-//
-//  MediaPipService.swift
-//  eyespy
-//
-//  Created by Alex Huynh on 11/18/24.
-//
-
 import MediaPipeTasksVision
 import Metal
 import MetalKit
 import CoreGraphics
 
-// Rename our custom types to avoid conflicts
+// Added error enum
+enum MediaPipeServiceError: Error {
+    case modelLoadError
+    case processingError
+    case invalidInput
+}
+
+// Added ProcessingStatus enum before it's used
+enum ProcessingStatus {
+    case idle
+    case processing
+    case error(String)
+}
+
+// Updated delegate protocol with separate methods
+protocol MediaPipeServiceDelegate: AnyObject {
+    func mediaPipeService(_ service: MediaPipeService, didEncounterError error: Error)
+    func mediaPipeService(_ service: MediaPipeService, didUpdateProcessingStatus status: ProcessingStatus)
+}
+
 class MediaPipeService: ObservableObject {
     private var poseLandmarker: PoseLandmarker?
     @Published var currentPoseResult: CustomPoseResult?
+    
+    // Added status tracking
+    @Published var processingStatus: ProcessingStatus = .idle
+    
+    // Added delegate
+    weak var delegate: MediaPipeServiceDelegate?
+    
+    // Added performance metrics
+    private var lastProcessingTime: CFTimeInterval = 0
+    private var averageProcessingTime: CFTimeInterval = 0
+    private var frameCount: Int = 0
     
     init() {
         setupPoseLandmarker()
@@ -28,26 +51,74 @@ class MediaPipeService: ObservableObject {
         do {
             poseLandmarker = try PoseLandmarker(options: options)
         } catch {
+            // Enhanced error handling
+            let modelError = MediaPipeServiceError.modelLoadError
+            delegate?.mediaPipeService(self, didEncounterError: modelError)
+            processingStatus = .error("Failed to load pose detection model")
+            delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
             print("Error setting up pose landmarker: \(error)")
         }
     }
     
+    // Added performance tracking method
+    private func updateProcessingMetrics(processingDuration: CFTimeInterval) {
+        frameCount += 1
+        averageProcessingTime = (averageProcessingTime * Double(frameCount - 1) + processingDuration) / Double(frameCount)
+        lastProcessingTime = CACurrentMediaTime()
+    }
+    
+    // Added method to get performance metrics
+    func getPerformanceMetrics() -> (averageTime: CFTimeInterval, lastFrameTime: CFTimeInterval, frameCount: Int) {
+        return (averageProcessingTime, lastProcessingTime, frameCount)
+    }
+    
     func processFrame(_ pixelBuffer: CVPixelBuffer, timestamp: Int64) {
-        guard let landmarker = poseLandmarker else { return }
+        guard let landmarker = poseLandmarker else {
+            processingStatus = .error("Pose landmarker not initialized")
+            delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
+            return
+        }
+        
+        // Added processing status update
+        processingStatus = .processing
+        delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
+        
+        // Added performance tracking
+        let startTime = CACurrentMediaTime()
         
         do {
             let mpImage = try MPImage(pixelBuffer: pixelBuffer)
             let result = try landmarker.detect(image: mpImage)
             
-            // Convert MediaPipe results to our CustomPoseResult model
             if let firstPose = result.landmarks.first {
                 let landmarks = convertToLandmarks(firstPose)
                 currentPoseResult = CustomPoseResult(landmarks: landmarks,
                                                    connections: getConnections(landmarks))
+                
+                // Update processing status to idle after successful processing
+                processingStatus = .idle
+                delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
             }
+            
+            // Update performance metrics
+            let processingDuration = CACurrentMediaTime() - startTime
+            updateProcessingMetrics(processingDuration: processingDuration)
+            
         } catch {
+            // Enhanced error handling
+            let processingError = MediaPipeServiceError.processingError
+            delegate?.mediaPipeService(self, didEncounterError: processingError)
+            processingStatus = .error("Failed to process frame")
+            delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
             print("Error processing frame: \(error)")
         }
+    }
+    
+    // Added method to reset metrics
+    func resetPerformanceMetrics() {
+        frameCount = 0
+        averageProcessingTime = 0
+        lastProcessingTime = 0
     }
     
     private func convertToLandmarks(_ landmarks: [NormalizedLandmark]) -> [CustomPoseLandmark] {
@@ -94,12 +165,12 @@ class MediaPipeService: ObservableObject {
                 return nil
             }
             return (from: landmarks[connection.from],
-                    to: landmarks[connection.to])
+                   to: landmarks[connection.to])
         }
     }
 }
 
-// Supporting types with renamed structures
+// Supporting types remain unchanged
 struct CustomPoseResult {
     let landmarks: [CustomPoseLandmark]
     let connections: [(from: CustomPoseLandmark, to: CustomPoseLandmark)]

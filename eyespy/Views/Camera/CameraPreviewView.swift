@@ -8,7 +8,7 @@
 import SwiftUI
 import AVFoundation
 
-// NEW: Added PermissionState enum
+// Added PermissionState enum
 enum CameraPermissionState {
     case granted
     case denied
@@ -21,7 +21,7 @@ struct CameraPreviewView: UIViewRepresentable {
     // Add orientation observer
     @ObservedObject private var orientationObserver = DeviceOrientationObserver()
     
-    // NEW: Move state to StateObject to avoid view update conflicts
+    // Move state to StateObject to avoid view update conflicts
     @StateObject private var permissionHandler = CameraPermissionHandler()
     
     func makeCoordinator() -> Coordinator {
@@ -29,7 +29,7 @@ struct CameraPreviewView: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> UIView {
-        // NEW: Check permission before creating view
+        // Check permission before creating view
         permissionHandler.checkCameraPermission()
         
         let view = UIView(frame: UIScreen.main.bounds)
@@ -72,7 +72,7 @@ struct CameraPreviewView: UIViewRepresentable {
         }
     }
     
-    // NEW: Coordinator to handle view lifecycle
+    // Coordinator to handle view lifecycle
     class Coordinator {
         let parent: CameraPreviewView
         
@@ -82,7 +82,7 @@ struct CameraPreviewView: UIViewRepresentable {
     }
 }
 
-// NEW: Separate permission handler class
+// Separate permission handler class
 class CameraPermissionHandler: ObservableObject {
     @Published var permissionState: CameraPermissionState = .notDetermined
     
@@ -127,7 +127,7 @@ class CameraPermissionHandler: ObservableObject {
             }
         }
     }
-}// NEW: Permission denied view
+}// Permission denied view
 struct CameraPermissionDeniedView: View {
     var body: some View {
         VStack(spacing: 20) {
