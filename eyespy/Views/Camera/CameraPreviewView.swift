@@ -175,12 +175,45 @@ private class DeviceOrientationObserver: ObservableObject {
     }
 }
 
-// Placeholder for pose visualization
+// pose visualization
 struct PoseVisualizationView: View {
-    var body: some View {
-        // This will be implemented later to show pose landmarks
-        Color.clear
-    }
+  let pose: PoseDetectionResult
+
+  init(pose: PoseDetectionResult) {
+      self.pose = pose
+  }
+
+  var body: some View {
+      GeometryReader { geometry in
+          ZStack {
+              // Draw connections
+              ForEach(pose.connections.indices, id: \.self) { index in
+                  let connection = pose.connections[index]
+                  Path { path in
+                      path.move(to: scaledPoint(connection.from.position, in: geometry))
+                      path.addLine(to: scaledPoint(connection.to.position, in: geometry))
+                  }
+                  .stroke(Color.green, lineWidth: 3)
+              }
+
+              // Draw landmarks
+              ForEach(pose.landmarks.indices, id: \.self) { index in
+                  let landmark = pose.landmarks[index]
+                  Circle()
+                      .fill(Color.blue)
+                      .frame(width: 10, height: 10)
+                      .position(scaledPoint(landmark.position, in: geometry))
+              }
+          }
+      }
+  }
+
+  private func scaledPoint(_ point: CGPoint, in geometry: GeometryProxy) -> CGPoint {
+      CGPoint(
+          x: point.x * geometry.size.width,
+          y: point.y * geometry.size.height
+      )
+  }
 }
 
 // Preview provider for SwiftUI canvas

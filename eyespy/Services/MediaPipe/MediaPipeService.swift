@@ -1,27 +1,31 @@
+//
+//  MediaPipeService.swift
+//  eyespy
+//
+//  Created by Alex Huynh on 11/18/24.
+//
+
 import MediaPipeTasksVision
 import Metal
 import MetalKit
 import CoreGraphics
 import Combine
 
-// Added error enum
 enum MediaPipeServiceError: Error {
-    case modelLoadError
-    case processingError
-    case invalidInput
+  case modelLoadError
+  case processingError
+  case invalidInput
 }
 
-// Added ProcessingStatus enum before it's used
 enum ProcessingStatus {
-    case idle
-    case processing
-    case error(String)
+  case idle
+  case processing
+  case error(String)
 }
 
-// Updated delegate protocol with separate methods
 protocol MediaPipeServiceDelegate: AnyObject {
-    func mediaPipeService(_ service: MediaPipeService, didEncounterError error: Error)
-    func mediaPipeService(_ service: MediaPipeService, didUpdateProcessingStatus status: ProcessingStatus)
+  func mediaPipeService(_ service: MediaPipeService, didEncounterError error: Error)
+  func mediaPipeService(_ service: MediaPipeService, didUpdateProcessingStatus status: ProcessingStatus)
 }
 
 class MediaPipeService: ObservableObject {
@@ -29,13 +33,18 @@ class MediaPipeService: ObservableObject {
     private var poseLandmarker: PoseLandmarker?
     @Published var currentPoseResult: PoseDetectionResult?
     
-    // Added status tracking
-    @Published var processingStatus: ProcessingStatus = .idle
+    // NEW: Added dedicated queues for processing and updates
+    private let processingQueue = DispatchQueue(label: "com.eyespy.mediapipe.processing", qos: .userInitiated)
+    private let updateQueue = DispatchQueue.main
     
-    // Added delegate
+    // NEW: Added Combine publishers for better state management
+    let posePublisher = PassthroughSubject<PoseDetectionResult, Never>()
+    let statusPublisher = PassthroughSubject<ProcessingStatus, Never>()
+    let errorPublisher = PassthroughSubject<MediaPipeServiceError, Never>()
+    
+    @Published var processingStatus: ProcessingStatus = .idle
     weak var delegate: MediaPipeServiceDelegate?
     
-    // Added performance metrics
     private var lastProcessingTime: CFTimeInterval = 0
     private var averageProcessingTime: CFTimeInterval = 0
     private var frameCount: Int = 0
@@ -45,131 +54,183 @@ class MediaPipeService: ObservableObject {
     }
     
     private func setupPoseLandmarker() {
-        let options = PoseLandmarkerOptions()
-        options.baseOptions.modelAssetPath = "pose_landmarker_lite.task"
-        options.runningMode = .video
-        options.numPoses = 1
-        
-        do {
-            poseLandmarker = try PoseLandmarker(options: options)
-        } catch {
-            // Enhanced error handling
-            let modelError = MediaPipeServiceError.modelLoadError
-            delegate?.mediaPipeService(self, didEncounterError: modelError)
-            processingStatus = .error("Failed to load pose detection model")
-            delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
-            print("Error setting up pose landmarker: \(error)")
+        // NEW: Run setup on processing queue
+        processingQueue.async { [weak self] in
+            let options = PoseLandmarkerOptions()
+            options.baseOptions.modelAssetPath = "pose_landmarker_lite.task"
+            options.runningMode = .video
+            options.numPoses = 1
+            
+            do {
+                self?.poseLandmarker = try PoseLandmarker(options: options)
+            } catch {
+                self?.updateQueue.async {
+                    let modelError = MediaPipeServiceError.modelLoadError
+                    self?.delegate?.mediaPipeService(self!, didEncounterError: modelError)
+                    self?.processingStatus = .error("Failed to load pose detection model")
+                    self?.delegate?.mediaPipeService(self!, didUpdateProcessingStatus: self!.processingStatus)
+                    self?.errorPublisher.send(.modelLoadError)
+                }
+                print("Error setting up pose landmarker: \(error)")
+            }
         }
     }
     
-    // Added performance tracking method
     private func updateProcessingMetrics(processingDuration: CFTimeInterval) {
         frameCount += 1
         averageProcessingTime = (averageProcessingTime * Double(frameCount - 1) + processingDuration) / Double(frameCount)
         lastProcessingTime = CACurrentMediaTime()
     }
     
-    // Added method to get performance metrics
     func getPerformanceMetrics() -> (averageTime: CFTimeInterval, lastFrameTime: CFTimeInterval, frameCount: Int) {
         return (averageProcessingTime, lastProcessingTime, frameCount)
     }
     
+    // NEW: Updated process frame with proper queue management
     func processFrame(_ pixelBuffer: CVPixelBuffer, timestamp: Int64) {
+        // Lock and copy the pixel buffer before entering the async block
+        let copiedBuffer = copyPixelBuffer(pixelBuffer)
+        
         guard let landmarker = poseLandmarker else {
-            processingStatus = .error("Pose landmarker not initialized")
-            delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
+            updateQueue.async { [weak self] in
+                guard let self = self else { return }
+                self.processingStatus = .error("Pose landmarker not initialized")
+                self.delegate?.mediaPipeService(self, didUpdateProcessingStatus: self.processingStatus)
+            }
             return
         }
-        
-        // Added processing status update
-        processingStatus = .processing
-        delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
-        
-        // Added performance tracking
-        let startTime = CACurrentMediaTime()
-        
-        do {
-            let mpImage = try MPImage(pixelBuffer: pixelBuffer)
-            let result = try landmarker.detect(image: mpImage)
+
+        processingQueue.async { [weak self] in
+            guard let self = self else { return }
             
-            if let firstPose = result.landmarks.first {
-                let landmarks = convertToLandmarks(firstPose)
-                currentPoseResult = PoseDetectionResult(
-                    landmarks: landmarks,
-                    connections: getConnections(landmarks)
-                )
-                
-                // Update processing status to idle after successful processing
-                processingStatus = .idle
-                delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
+            // Process copiedBuffer in the async block
+            self.updateQueue.async {
+                self.processingStatus = .processing
+                self.statusPublisher.send(.processing)
+                self.delegate?.mediaPipeService(self, didUpdateProcessingStatus: self.processingStatus)
             }
-            
-            // Update performance metrics
-            let processingDuration = CACurrentMediaTime() - startTime
-            updateProcessingMetrics(processingDuration: processingDuration)
-            
-        } catch {
-            // Enhanced error handling
-            let processingError = MediaPipeServiceError.processingError
-            delegate?.mediaPipeService(self, didEncounterError: processingError)
-            processingStatus = .error("Failed to process frame")
-            delegate?.mediaPipeService(self, didUpdateProcessingStatus: processingStatus)
-            print("Error processing frame: \(error)")
+
+            let startTime = CACurrentMediaTime()
+
+            do {
+                let mpImage = try MPImage(pixelBuffer: copiedBuffer)
+                let result = try landmarker.detect(image: mpImage)
+
+                if let firstPose = result.landmarks.first {
+                    let landmarks = self.convertToLandmarks(firstPose)
+                    let poseResult = PoseDetectionResult(
+                        landmarks: landmarks,
+                        connections: self.getConnections(landmarks)
+                    )
+
+                    self.updateQueue.async {
+                        self.currentPoseResult = poseResult
+                        self.posePublisher.send(poseResult)
+                        self.processingStatus = .idle
+                        self.statusPublisher.send(.idle)
+                        self.delegate?.mediaPipeService(self, didUpdateProcessingStatus: self.processingStatus)
+                    }
+                }
+
+                let processingDuration = CACurrentMediaTime() - startTime
+                self.updateProcessingMetrics(processingDuration: processingDuration)
+
+            } catch {
+                self.updateQueue.async {
+                    let processingError = MediaPipeServiceError.processingError
+                    self.delegate?.mediaPipeService(self, didEncounterError: processingError)
+                    self.processingStatus = .error("Failed to process frame")
+                    self.errorPublisher.send(.processingError)
+                    self.statusPublisher.send(.error("Failed to process frame"))
+                    self.delegate?.mediaPipeService(self, didUpdateProcessingStatus: self.processingStatus)
+                }
+                print("Error processing frame: \(error)")
+            }
         }
     }
     
-    // Added method to reset metrics
-    func resetPerformanceMetrics() {
-        frameCount = 0
-        averageProcessingTime = 0
-        lastProcessingTime = 0
-    }
-    
-    private func convertToLandmarks(_ landmarks: [NormalizedLandmark]) -> [PoseLandmark] {
-        return landmarks.enumerated().map { (index, landmark) in
-            PoseLandmark(
-                position: CGPoint(
-                    x: CGFloat(landmark.x),
-                    y: CGFloat(landmark.y)
-                ),
-                confidence: Float(truncating: landmark.visibility ?? 0.0),
-                type: LandmarkType(rawValue: index) ?? .nose
-            )
-        }
-    }
-    
-    private func getConnections(_ landmarks: [PoseLandmark]) -> [(from: PoseLandmark, to: PoseLandmark)] {
-        let connections: [(from: Int, to: Int)] = [
-            // Torso
-            (11, 12), // shoulders
-            (11, 23), // left shoulder to left hip
-            (12, 24), // right shoulder to right hip
-            (23, 24), // hips
-            
-            // Left arm
-            (11, 13), // shoulder to elbow
-            (13, 15), // elbow to wrist
-            
-            // Right arm
-            (12, 14), // shoulder to elbow
-            (14, 16), // elbow to wrist
-            
-            // Left leg
-            (23, 25), // hip to knee
-            (25, 27), // knee to ankle
-            
-            // Right leg
-            (24, 26), // hip to knee
-            (26, 28)  // knee to ankle
+    private func copyPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> CVPixelBuffer {
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+
+        let width = CVPixelBufferGetWidth(pixelBuffer)
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        let pixelFormat = kCVPixelFormatType_32BGRA // Ensure compatible format
+        var newPixelBuffer: CVPixelBuffer?
+
+        let attributes: [String: Any] = [
+            kCVPixelBufferCGImageCompatibilityKey as String: true,
+            kCVPixelBufferCGBitmapContextCompatibilityKey as String: true
         ]
-        
-        return connections.compactMap { connection in
-            guard connection.from < landmarks.count,
-                  connection.to < landmarks.count else {
-                return nil
-            }
-            return (from: landmarks[connection.from],
-                   to: landmarks[connection.to])
+
+        CVPixelBufferCreate(nil, width, height, pixelFormat, attributes as CFDictionary, &newPixelBuffer)
+
+        guard let buffer = newPixelBuffer,
+              let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer),
+              let newBaseAddress = CVPixelBufferGetBaseAddress(buffer) else {
+            fatalError("Failed to create and copy pixel buffer.")
         }
+
+        memcpy(newBaseAddress, baseAddress, CVPixelBufferGetDataSize(pixelBuffer))
+        return buffer
     }
-}
+    
+    private func createPixelBuffer(from originalPixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
+        var newPixelBuffer: CVPixelBuffer?
+        let width = CVPixelBufferGetWidth(originalPixelBuffer)
+        let height = CVPixelBufferGetHeight(originalPixelBuffer)
+        let pixelFormat = CVPixelBufferGetPixelFormatType(originalPixelBuffer)
+        let attributes: CFDictionary? = nil
+
+        CVPixelBufferCreate(nil, width, height, pixelFormat, attributes, &newPixelBuffer)
+        return newPixelBuffer
+    }
+
+     private func convertToLandmarks(_ landmarks: [NormalizedLandmark]) -> [PoseLandmark] {
+         return landmarks.enumerated().map { (index, landmark) in
+             PoseLandmark(
+                 position: CGPoint(
+                     x: CGFloat(landmark.x),
+                     y: CGFloat(landmark.y)
+                 ),
+                 confidence: Float(truncating: landmark.visibility ?? 0.0),
+                 type: LandmarkType(rawValue: index) ?? .nose
+             )
+         }
+     }
+
+     private func getConnections(_ landmarks: [PoseLandmark]) -> [(from: PoseLandmark, to: PoseLandmark)] {
+         let connections: [(from: Int, to: Int)] = [
+             // Torso
+             (11, 12), // shoulders
+             (11, 23), // left shoulder to left hip
+             (12, 24), // right shoulder to right hip
+             (23, 24), // hips
+
+             // Left arm
+             (11, 13), // shoulder to elbow
+             (13, 15), // elbow to wrist
+
+             // Right arm
+             (12, 14), // shoulder to elbow
+             (14, 16), // elbow to wrist
+
+             // Left leg
+             (23, 25), // hip to knee
+             (25, 27), // knee to ankle
+
+             // Right leg
+             (24, 26), // hip to knee
+             (26, 28)  // knee to ankle
+         ]
+
+         return connections.compactMap { connection in
+             guard connection.from < landmarks.count,
+                   connection.to < landmarks.count else {
+                 return nil
+             }
+             return (from: landmarks[connection.from],
+                    to: landmarks[connection.to])
+         }
+     }
+   }

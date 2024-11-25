@@ -75,15 +75,11 @@
 		};
 		CB34C84C2CEC5AB5006FCE3E /* eyespyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = eyespyTests;
 			sourceTree = "<group>";
 		};
 		CB34C8562CEC5AB5006FCE3E /* eyespyUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = eyespyUITests;
 			sourceTree = "<group>";
 		};

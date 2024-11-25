@@ -8,51 +8,99 @@ import Combine
 import AVFoundation
 
 class MainViewModel: ObservableObject {
-    private let cameraManager = CameraManager()
-    private let mediaPipeService = MediaPipeService()
-    private var cancellables = Set<AnyCancellable>()
-    
-    @Published var isRunning: Bool = false
-    @Published var currentPose: PoseDetectionResult?
-    
-    init() {
-        setupBindings()
-    }
-    
+  private let cameraManager = CameraManager()
+  private let mediaPipeService = MediaPipeService()
+  private var cancellables = Set<AnyCancellable>()
+
+  // NEW: Added additional state management properties
+  @Published var isRunning: Bool = false
+  @Published var currentPose: PoseDetectionResult?
+  @Published private(set) var cameraState: CameraState = .setup
+  @Published private(set) var processingState: ProcessingStatus = .idle
+
+  // NEW: Added error handling
+  let errorSubject = PassthroughSubject<ViewModelError, Never>()
+
+  // NEW: Added state enums
+  enum CameraState {
+      case setup
+      case running
+      case paused
+      case error(Error)
+  }
+
+  enum ViewModelError: Error {
+      case cameraSetupFailed
+      case processingFailed
+      case poseDetectionFailed
+  }
+
+  init() {
+      setupBindings()
+  }
+
     private func setupBindings() {
-        // Bind camera state
+        // Fix the isRunning binding
         cameraManager.$isRunning
-            .assign(to: \.isRunning, on: self)
-            .store(in: &cancellables)
-        
-        // Connect camera frames to MediaPipeService
+            .assign(to: &$isRunning)
+
+        // Fix the currentFrame binding
         cameraManager.$currentFrame
-            .compactMap { \$0 }
+            .compactMap { $0 } // Ensure non-nil frames
             .receive(on: DispatchQueue.global(qos: .userInitiated))
             .sink { [weak self] sampleBuffer in
-                guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+                guard let self = self,
+                      let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
                 let timestamp = Int64(CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) * 1000)
-                self?.mediaPipeService.processFrame(pixelBuffer, timestamp: timestamp)
+                self.mediaPipeService.processFrame(pixelBuffer, timestamp: timestamp)
             }
             .store(in: &cancellables)
-        
+
         // Bind pose results
         mediaPipeService.$currentPoseResult
             .receive(on: DispatchQueue.main)
-            .assign(to: \.currentPose, on: self)
+            .assign(to: &$currentPose)
+
+        // Bind processing state
+        mediaPipeService.statusPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                self?.processingState = status
+            }
+            .store(in: &cancellables)
+
+        // Bind error handling
+        mediaPipeService.errorPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                self?.handleMediaPipeError(error)
+            }
             .store(in: &cancellables)
     }
     
-    func startSession() {
-        cameraManager.startSession()
-    }
-    
-    func stopSession() {
-        cameraManager.stopSession()
-    }
-    
-    // Expose camera manager for preview view
-    var captureSession: AVCaptureSession {
-        cameraManager.captureSession
-    }
+  // NEW: Error handling method
+  private func handleMediaPipeError(_ error: MediaPipeServiceError) {
+      switch error {
+      case .modelLoadError:
+          errorSubject.send(.processingFailed)
+      case .processingError:
+          errorSubject.send(.processingFailed)
+      case .invalidInput:
+          errorSubject.send(.processingFailed)
+      }
+  }
+
+  func startSession() {
+      cameraManager.startSession()
+      cameraState = .running
+  }
+
+  func stopSession() {
+      cameraManager.stopSession()
+      cameraState = .paused
+  }
+
+  var captureSession: AVCaptureSession {
+      cameraManager.captureSession
+  }
 }
