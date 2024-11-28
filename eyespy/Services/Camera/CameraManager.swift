@@ -20,6 +20,22 @@ enum CameraError: Error {
 class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, ObservableObject {
     public let captureSession = AVCaptureSession()
     private var videoDataOutput: AVCaptureVideoDataOutput?
+    private var lastProcessedFrameTime: CFTimeInterval = 0
+    private let minimumFrameInterval: CFTimeInterval = 1.0 / 30.0 // 30 FPS
+    private let mediaPipeService: MediaPipeService
+    
+    init(mediaPipeService: MediaPipeService) {
+      self.mediaPipeService = mediaPipeService
+      super.init()
+      // Check permissions before setup
+      checkCameraPermissions { [weak self] granted in
+          if granted {
+              self?.setupCaptureSession()
+          } else {
+              self?.error = .permissionDenied
+          }
+      }
+    }
     
     // Original published properties
     @Published var isRunning: Bool = false
@@ -29,22 +45,28 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, Obs
     @Published var error: CameraError?
     
     @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        DispatchQueue.main.async {
-            self.currentFrame = sampleBuffer
-        }
+      guard isRunning else { return }
+
+      // Update current frame for preview if needed
+      DispatchQueue.main.async {
+          self.currentFrame = sampleBuffer
+      }
+
+      // Process frame for pose detection
+      guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+          return
+      }
+
+      let timestamp = Int64(CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) * 1000)
+
+      // Throttle frame processing to maintain performance
+      let currentTime = CACurrentMediaTime()
+      if currentTime - lastProcessedFrameTime >= minimumFrameInterval {
+          mediaPipeService.processFrame(pixelBuffer, timestamp: timestamp)
+          lastProcessedFrameTime = currentTime
+      }
     }
     
-    override init() {
-        super.init()
-        // Check permissions before setup
-        checkCameraPermissions { [weak self] granted in
-            if granted {
-                self?.setupCaptureSession()
-            } else {
-                self?.error = .permissionDenied
-            }
-        }
-    }
     
     // Added permission handling
     private func checkCameraPermissions(completion: @escaping (Bool) -> Void) {

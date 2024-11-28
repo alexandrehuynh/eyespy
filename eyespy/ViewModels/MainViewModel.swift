@@ -4,13 +4,20 @@
 //
 //  Created by Alex Huynh on 11/21/24.
 //
-import Combine
 import AVFoundation
+import CoreMedia
+import Combine
 
 class MainViewModel: ObservableObject {
-  private let cameraManager = CameraManager()
-  private let mediaPipeService = MediaPipeService()
+  private let mediaPipeService: MediaPipeService
+  private let cameraManager: CameraManager
   private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        self.mediaPipeService = MediaPipeService()
+        self.cameraManager = CameraManager(mediaPipeService: mediaPipeService)
+        setupBindings()
+    }
 
   // NEW: Added additional state management properties
   @Published var isRunning: Bool = false
@@ -33,10 +40,6 @@ class MainViewModel: ObservableObject {
       case cameraSetupFailed
       case processingFailed
       case poseDetectionFailed
-  }
-
-  init() {
-      setupBindings()
   }
 
     private func setupBindings() {

@@ -17,10 +17,23 @@ enum MediaPipeServiceError: Error {
   case invalidInput
 }
 
-enum ProcessingStatus {
+enum ProcessingStatus: Equatable {
   case idle
   case processing
   case error(String)
+
+  static func == (lhs: ProcessingStatus, rhs: ProcessingStatus) -> Bool {
+      switch (lhs, rhs) {
+      case (.idle, .idle):
+          return true
+      case (.processing, .processing):
+          return true
+      case (.error(let lhsError), .error(let rhsError)):
+          return lhsError == rhsError
+      default:
+          return false
+      }
+  }
 }
 
 protocol MediaPipeServiceDelegate: AnyObject {
@@ -88,65 +101,62 @@ class MediaPipeService: ObservableObject {
     
     // NEW: Updated process frame with proper queue management
     func processFrame(_ pixelBuffer: CVPixelBuffer, timestamp: Int64) {
-        // Lock and copy the pixel buffer before entering the async block
-        let copiedBuffer = copyPixelBuffer(pixelBuffer)
-        
-        guard let landmarker = poseLandmarker else {
-            updateQueue.async { [weak self] in
-                guard let self = self else { return }
-                self.processingStatus = .error("Pose landmarker not initialized")
-                self.delegate?.mediaPipeService(self, didUpdateProcessingStatus: self.processingStatus)
-            }
-            return
-        }
+      // Early exit if already processing or landmarker not ready
+      guard processingStatus != .processing,
+            let landmarker = poseLandmarker else {
+          return
+      }
 
-        processingQueue.async { [weak self] in
-            guard let self = self else { return }
-            
-            // Process copiedBuffer in the async block
-            self.updateQueue.async {
-                self.processingStatus = .processing
-                self.statusPublisher.send(.processing)
-                self.delegate?.mediaPipeService(self, didUpdateProcessingStatus: self.processingStatus)
-            }
+      // Create MPImage synchronously before async work
+      do {
+          let mpImage = try MPImage(pixelBuffer: pixelBuffer)
 
-            let startTime = CACurrentMediaTime()
+          processingQueue.async { [weak self, mpImage] in
+              guard let self = self else { return }
 
-            do {
-                let mpImage = try MPImage(pixelBuffer: copiedBuffer)
-                let result = try landmarker.detect(image: mpImage)
+              self.updateQueue.async {
+                  self.processingStatus = .processing
+                  self.statusPublisher.send(.processing)
+              }
 
-                if let firstPose = result.landmarks.first {
-                    let landmarks = self.convertToLandmarks(firstPose)
-                    let poseResult = PoseDetectionResult(
-                        landmarks: landmarks,
-                        connections: self.getConnections(landmarks)
-                    )
+              let startTime = CACurrentMediaTime()
 
-                    self.updateQueue.async {
-                        self.currentPoseResult = poseResult
-                        self.posePublisher.send(poseResult)
-                        self.processingStatus = .idle
-                        self.statusPublisher.send(.idle)
-                        self.delegate?.mediaPipeService(self, didUpdateProcessingStatus: self.processingStatus)
-                    }
-                }
+              do {
+                  let result = try landmarker.detect(image: mpImage)
 
-                let processingDuration = CACurrentMediaTime() - startTime
-                self.updateProcessingMetrics(processingDuration: processingDuration)
+                  if let firstPose = result.landmarks.first {
+                      let landmarks = self.convertToLandmarks(firstPose)
+                      let poseResult = PoseDetectionResult(
+                          landmarks: landmarks,
+                          connections: self.getConnections(landmarks)
+                      )
 
-            } catch {
-                self.updateQueue.async {
-                    let processingError = MediaPipeServiceError.processingError
-                    self.delegate?.mediaPipeService(self, didEncounterError: processingError)
-                    self.processingStatus = .error("Failed to process frame")
-                    self.errorPublisher.send(.processingError)
-                    self.statusPublisher.send(.error("Failed to process frame"))
-                    self.delegate?.mediaPipeService(self, didUpdateProcessingStatus: self.processingStatus)
-                }
-                print("Error processing frame: \(error)")
-            }
-        }
+                      self.updateQueue.async {
+                          self.currentPoseResult = poseResult
+                          self.posePublisher.send(poseResult)
+                          self.processingStatus = .idle
+                          self.statusPublisher.send(.idle)
+                      }
+                  }
+
+                  let processingDuration = CACurrentMediaTime() - startTime
+                  self.updateProcessingMetrics(processingDuration: processingDuration)
+
+              } catch {
+                  self.updateQueue.async {
+                      self.processingStatus = .error("Failed to process frame")
+                      self.errorPublisher.send(.processingError)
+                  }
+                  print("Error processing frame: \(error)")
+              }
+          }
+      } catch {
+          updateQueue.async {
+              self.processingStatus = .error("Failed to create MPImage")
+              self.errorPublisher.send(.processingError)
+          }
+          print("Error creating MPImage: \(error)")
+      }
     }
     
     private func copyPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> CVPixelBuffer {
