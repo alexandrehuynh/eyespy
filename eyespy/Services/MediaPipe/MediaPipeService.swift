@@ -159,6 +159,10 @@ class MediaPipeService: ObservableObject {
       }
     }
     
+    // MARK: - Future Implementation
+    /// Buffer copying functionality - may be needed for future recording/playback features
+    /// Currently unused in Phase 1 (Core Features Implementation)
+    /*
     private func copyPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> CVPixelBuffer {
         CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
         defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
@@ -184,6 +188,7 @@ class MediaPipeService: ObservableObject {
         memcpy(newBaseAddress, baseAddress, CVPixelBufferGetDataSize(pixelBuffer))
         return buffer
     }
+     */
     
     private func createPixelBuffer(from originalPixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
         var newPixelBuffer: CVPixelBuffer?
