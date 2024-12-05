@@ -130,7 +130,8 @@ class MediaPipeService: ObservableObject {
                           landmarks: landmarks,
                           connections: self.getConnections(landmarks)
                       )
-
+                      print("Detected pose: \(poseResult)")
+                      
                       self.updateQueue.async {
                           self.currentPoseResult = poseResult
                           self.posePublisher.send(poseResult)

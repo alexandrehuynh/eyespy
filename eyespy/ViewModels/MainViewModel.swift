@@ -62,7 +62,14 @@ class MainViewModel: ObservableObject {
         // Bind pose results
         mediaPipeService.$currentPoseResult
             .receive(on: DispatchQueue.main)
-            .assign(to: &$currentPose)
+            .sink { pose in
+                if let pose = pose {
+                    print("Pose received in MainViewModel: \(pose)")
+                } else {
+                    print("Received nil pose")
+                }
+            }
+            .store(in: &cancellables)
 
         // Bind processing state
         mediaPipeService.statusPublisher
