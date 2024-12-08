@@ -13,17 +13,20 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
+            // Camera Preview Layer
             CameraPreviewView(session: viewModel.captureSession)
                 .edgesIgnoringSafeArea(.all)
 
+            // Loading State
             if !viewModel.isRunning {
                 Color.black
                 Text("Starting camera...")
                     .foregroundColor(.white)
             }
 
+            // Pose Visualization Layer
             if let pose = viewModel.currentPose {
-                PoseVisualizationView(pose: pose)
+                PoseVisualizationLayerView(pose: pose) // Use the new wrapper
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .edgesIgnoringSafeArea(.all)
             }
