@@ -4,7 +4,6 @@
 //
 //  Created by Alex Huynh on 11/21/24.
 //
-
 import AVFoundation
 import CoreMedia
 import Combine
@@ -41,11 +40,17 @@ class MainViewModel: ObservableObject {
     }
 
     private func setupBindings() {
+        // Bind isRunning using sink
         cameraManager.$isRunning
-            .assign(to: &$isRunning)
-
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isRunning in
+                self?.isRunning = isRunning
+            }
+            .store(in: &cancellables)
+      
+        // Bind currentFrame without unnecessary backslash
         cameraManager.$currentFrame
-            .compactMap { \$0 }
+            .compactMap { $0 }
             .receive(on: DispatchQueue.global(qos: .userInitiated))
             .sink { [weak self] sampleBuffer in
                 guard let self = self,
@@ -54,21 +59,24 @@ class MainViewModel: ObservableObject {
                 self.mediaPipeService.processFrame(pixelBuffer, timestamp: timestamp)
             }
             .store(in: &cancellables)
-
+      
+        // Bind pose results
         mediaPipeService.$currentPoseResult
             .receive(on: DispatchQueue.main)
             .sink { [weak self] pose in
                 self?.currentPose = pose
             }
             .store(in: &cancellables)
-
+      
+        // Bind processing state
         mediaPipeService.statusPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
                 self?.processingState = status
             }
             .store(in: &cancellables)
-
+      
+        // Bind error handling
         mediaPipeService.errorPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
@@ -76,7 +84,7 @@ class MainViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-
+    
     private func handleMediaPipeError(_ error: MediaPipeServiceError) {
         switch error {
         case .modelLoadError, .processingError, .invalidInput:
