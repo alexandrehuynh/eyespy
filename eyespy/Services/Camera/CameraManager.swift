@@ -20,53 +20,67 @@ enum CameraError: Error {
 class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, ObservableObject {
     public let captureSession = AVCaptureSession()
     private var videoDataOutput: AVCaptureVideoDataOutput?
+    private var frameMetrics = (
+        processed: 0,
+        skipped: 0,
+        total: 0
+    )
     private var lastProcessedFrameTime: CFTimeInterval = 0
     private let minimumFrameInterval: CFTimeInterval = 1.0 / 30.0 // 30 FPS
     private let mediaPipeService: MediaPipeService
     
-    init(mediaPipeService: MediaPipeService) {
-      self.mediaPipeService = mediaPipeService
-      super.init()
-      // Check permissions before setup
-      checkCameraPermissions { [weak self] granted in
-          if granted {
-              self?.setupCaptureSession()
-          } else {
-              self?.error = .permissionDenied
-          }
-      }
-    }
-    
-    // Original published properties
     @Published var isRunning: Bool = false
     @Published var currentFrame: CMSampleBuffer?
-    
-    // Added published property for error handling
     @Published var error: CameraError?
     
-    @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-      guard isRunning else { return }
-
-      // Update current frame for preview if needed
-      DispatchQueue.main.async {
-          self.currentFrame = sampleBuffer
-      }
-
-      // Process frame for pose detection
-      guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-          return
-      }
-
-      let timestamp = Int64(CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) * 1000)
-
-      // Throttle frame processing to maintain performance
-      let currentTime = CACurrentMediaTime()
-      if currentTime - lastProcessedFrameTime >= minimumFrameInterval {
-          mediaPipeService.processFrame(pixelBuffer, timestamp: timestamp)
-          lastProcessedFrameTime = currentTime
-      }
+    init(mediaPipeService: MediaPipeService) {
+        self.mediaPipeService = mediaPipeService
+        super.init()
+        checkCameraPermissions { [weak self] granted in
+            if granted {
+                self?.setupCaptureSession()
+            } else {
+                self?.error = .permissionDenied
+            }
+        }
     }
     
+    @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard isRunning else { return }
+        
+        DispatchQueue.main.async {
+            self.currentFrame = sampleBuffer
+        }
+        
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            print("Error: Could not get pixel buffer from sampleBuffer.")
+            return
+        }
+        
+        let timestamp = Int64(CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) * 1000)
+        
+        frameMetrics.total += 1
+        
+        let currentTime = CACurrentMediaTime()
+        if currentTime - lastProcessedFrameTime >= minimumFrameInterval {
+            frameMetrics.processed += 1
+            print("Processing frame at timestamp: \(timestamp) (Total: \(frameMetrics.processed)/\(frameMetrics.total))")
+            mediaPipeService.processFrame(pixelBuffer, timestamp: timestamp)
+            lastProcessedFrameTime = currentTime
+        } else {
+            frameMetrics.skipped += 1
+            print("Skipping frame to maintain 30 FPS (Skipped: \(frameMetrics.skipped)/\(frameMetrics.total))")
+        }
+    }
+    
+    func getFrameMetrics() -> (processed: Int, skipped: Int, total: Int) {
+        return frameMetrics
+    }
+    
+    func resetMetrics() {
+        frameMetrics = (processed: 0, skipped: 0, total: 0)
+        lastProcessedFrameTime = 0
+    }
     
     // Added permission handling
     private func checkCameraPermissions(completion: @escaping (Bool) -> Void) {
@@ -169,6 +183,9 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, Obs
             }
             
             self?.captureSession.commitConfiguration()
+            
+            // Reset metrics
+            self?.resetMetrics()
             
             // Reconfigure the session
             self?.setupCaptureSession(completion: completion)

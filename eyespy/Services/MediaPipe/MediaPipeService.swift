@@ -10,6 +10,7 @@ import Metal
 import MetalKit
 import CoreGraphics
 import Combine
+import UIKit
 
 enum MediaPipeServiceError: Error {
   case modelLoadError
@@ -44,13 +45,24 @@ protocol MediaPipeServiceDelegate: AnyObject {
 class MediaPipeService: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var poseLandmarker: PoseLandmarker?
+    
     @Published var currentPoseResult: PoseDetectionResult?
     
-    // NEW: Added dedicated queues for processing and updates
+    // Added dedicated queues for processing and updates
     private let processingQueue = DispatchQueue(label: "com.eyespy.mediapipe.processing", qos: .userInitiated)
     private let updateQueue = DispatchQueue.main
     
-    // NEW: Added Combine publishers for better state management
+    // Add initialization flag
+    private var isLandmarkerInitialized = false
+    private let initializationQueue = DispatchQueue(label: "com.eyespy.mediapipe.initialization")
+    
+    private var processingMetrics = (
+        processed: 0,
+        skipped: 0,
+        total: 0
+    )
+    
+    // Added Combine publishers for better state management
     let posePublisher = PassthroughSubject<PoseDetectionResult, Never>()
     let statusPublisher = PassthroughSubject<ProcessingStatus, Never>()
     let errorPublisher = PassthroughSubject<MediaPipeServiceError, Never>()
@@ -67,97 +79,126 @@ class MediaPipeService: ObservableObject {
     }
     
     private func setupPoseLandmarker() {
-        // NEW: Run setup on processing queue
-        processingQueue.async { [weak self] in
+        initializationQueue.async { [weak self] in
+            guard let self = self else { return }
+            
             let options = PoseLandmarkerOptions()
             options.baseOptions.modelAssetPath = "pose_landmarker_lite.task"
-            options.runningMode = .video
+            options.runningMode = .video  // Explicitly set video mode
             options.numPoses = 1
             
             do {
-                self?.poseLandmarker = try PoseLandmarker(options: options)
-            } catch {
-                self?.updateQueue.async {
-                    let modelError = MediaPipeServiceError.modelLoadError
-                    self?.delegate?.mediaPipeService(self!, didEncounterError: modelError)
-                    self?.processingStatus = .error("Failed to load pose detection model")
-                    self?.delegate?.mediaPipeService(self!, didUpdateProcessingStatus: self!.processingStatus)
-                    self?.errorPublisher.send(.modelLoadError)
+                self.poseLandmarker = try PoseLandmarker(options: options)
+                self.isLandmarkerInitialized = true
+                print("PoseLandmarker initialized successfully in .video mode")
+                
+                self.updateQueue.async {
+                    self.processingStatus = .idle
+                    self.statusPublisher.send(.idle)
                 }
-                print("Error setting up pose landmarker: \(error)")
+            } catch {
+                print("Error initializing PoseLandmarker: \(error)")
+                self.updateQueue.async {
+                    self.errorPublisher.send(.modelLoadError)
+                    self.processingStatus = .error("Failed to load pose detection model")
+                    self.statusPublisher.send(.error("Failed to load pose detection model"))
+                }
             }
         }
     }
     
+    func processFrame(_ pixelBuffer: CVPixelBuffer, timestamp: Int64) {
+        guard isLandmarkerInitialized else {
+            print("PoseLandmarker not yet initialized")
+            processingMetrics.skipped += 1
+            processingMetrics.total += 1
+            return
+        }
+        
+        guard let landmarker = poseLandmarker else {
+            print("PoseLandmarker is nil")
+            processingMetrics.skipped += 1
+            processingMetrics.total += 1
+            return
+        }
+
+        do {
+            let mpImage = try MPImage(pixelBuffer: pixelBuffer)
+            print("MPImage created successfully.")
+
+            processingQueue.async { [weak self, mpImage] in
+                guard let self = self else { return }
+
+                self.updateQueue.async {
+                    self.processingStatus = .processing
+                    self.statusPublisher.send(.processing)
+                }
+
+                let startTime = CACurrentMediaTime()
+
+                do {
+                    let result = try landmarker.detect(image: mpImage)
+                    print("PoseLandmarker returned results: \(result.landmarks.count) poses detected.")
+
+                    if let firstPose = result.landmarks.first {
+                        let landmarks = self.convertToLandmarks(firstPose)
+                        let poseResult = PoseDetectionResult(
+                            landmarks: landmarks,
+                            connections: self.getConnections(landmarks)
+                        )
+                        print("Detected pose: \(poseResult.landmarks.count) landmarks.")
+
+                        self.updateQueue.async {
+                            self.currentPoseResult = poseResult
+                            self.posePublisher.send(poseResult)
+                            self.processingStatus = .idle
+                            self.statusPublisher.send(.idle)
+                        }
+                    } else {
+                        print("No pose landmarks detected.")
+                        self.processingMetrics.skipped += 1
+                    }
+
+                    let processingDuration = CACurrentMediaTime() - startTime
+                    self.updateProcessingMetrics(processingDuration: processingDuration)
+
+                } catch {
+                    self.processingMetrics.skipped += 1
+                    self.updateQueue.async {
+                        self.processingStatus = .error("Failed to process frame")
+                        self.errorPublisher.send(.processingError)
+                    }
+                    print("Error processing frame: \(error)")
+                }
+            }
+        } catch {
+            processingMetrics.skipped += 1
+            processingMetrics.total += 1
+            updateQueue.async {
+                self.processingStatus = .error("Failed to create MPImage")
+                self.errorPublisher.send(.processingError)
+            }
+            print("Error creating MPImage: \(error)")
+        }
+    }
+    
     private func updateProcessingMetrics(processingDuration: CFTimeInterval) {
+        processingMetrics.processed += 1
+        processingMetrics.total += 1
         frameCount += 1
         averageProcessingTime = (averageProcessingTime * Double(frameCount - 1) + processingDuration) / Double(frameCount)
         lastProcessingTime = CACurrentMediaTime()
     }
-    
-    func getPerformanceMetrics() -> (averageTime: CFTimeInterval, lastFrameTime: CFTimeInterval, frameCount: Int) {
-        return (averageProcessingTime, lastProcessingTime, frameCount)
+
+    func getProcessingMetrics() -> (processed: Int, skipped: Int, total: Int) {
+        return processingMetrics
     }
-    
-    // NEW: Updated process frame with proper queue management
-    func processFrame(_ pixelBuffer: CVPixelBuffer, timestamp: Int64) {
-      // Early exit if already processing or landmarker not ready
-      guard processingStatus != .processing,
-            let landmarker = poseLandmarker else {
-          return
-      }
 
-      // Create MPImage synchronously before async work
-      do {
-          let mpImage = try MPImage(pixelBuffer: pixelBuffer)
-
-          processingQueue.async { [weak self, mpImage] in
-              guard let self = self else { return }
-
-              self.updateQueue.async {
-                  self.processingStatus = .processing
-                  self.statusPublisher.send(.processing)
-              }
-
-              let startTime = CACurrentMediaTime()
-
-              do {
-                  let result = try landmarker.detect(image: mpImage)
-
-                  if let firstPose = result.landmarks.first {
-                      let landmarks = self.convertToLandmarks(firstPose)
-                      let poseResult = PoseDetectionResult(
-                          landmarks: landmarks,
-                          connections: self.getConnections(landmarks)
-                      )
-                      print("Detected pose: \(poseResult)")
-                      
-                      self.updateQueue.async {
-                          self.currentPoseResult = poseResult
-                          self.posePublisher.send(poseResult)
-                          self.processingStatus = .idle
-                          self.statusPublisher.send(.idle)
-                      }
-                  }
-
-                  let processingDuration = CACurrentMediaTime() - startTime
-                  self.updateProcessingMetrics(processingDuration: processingDuration)
-
-              } catch {
-                  self.updateQueue.async {
-                      self.processingStatus = .error("Failed to process frame")
-                      self.errorPublisher.send(.processingError)
-                  }
-                  print("Error processing frame: \(error)")
-              }
-          }
-      } catch {
-          updateQueue.async {
-              self.processingStatus = .error("Failed to create MPImage")
-              self.errorPublisher.send(.processingError)
-          }
-          print("Error creating MPImage: \(error)")
-      }
+    func resetProcessingMetrics() {
+        processingMetrics = (processed: 0, skipped: 0, total: 0)
+        frameCount = 0
+        lastProcessingTime = 0
+        averageProcessingTime = 0
     }
     
     // MARK: - Future Implementation
@@ -190,6 +231,22 @@ class MediaPipeService: ObservableObject {
         return buffer
     }
      */
+    
+    func processStaticImage(_ image: UIImage) {
+        let options = PoseLandmarkerOptions()
+        options.baseOptions.modelAssetPath = "pose_landmarker_lite.task"
+        options.runningMode = .image // Set to image mode for static processing
+
+        do {
+            let landmarker = try PoseLandmarker(options: options)
+            let pixelBuffer = image.toPixelBuffer()!
+            let mpImage = try MPImage(pixelBuffer: pixelBuffer)
+            let result = try landmarker.detect(image: mpImage)
+            print("Static image pose detected: \(result.landmarks.count) poses")
+        } catch {
+            print("Error processing static image: \(error)")
+        }
+    }
     
     private func createPixelBuffer(from originalPixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
         var newPixelBuffer: CVPixelBuffer?
